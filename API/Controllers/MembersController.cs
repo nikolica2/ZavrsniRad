@@ -17,7 +17,7 @@ namespace API.Controllers
             return members;
         }
 
-        [HttpGet("{id}")]   //localhost:5001/api/members/niksi1950
+        [HttpGet("{id}")]   //localhost:5001/api/members/id
         public async Task<ActionResult<AppUser>> GetMember(string id)
         {
             var member = await context.Users.FindAsync(id);
