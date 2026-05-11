@@ -1,1 +1,106 @@
-<p>projects works!</p>
+<div class="max-w-2xl mx-auto">
+  <h2 class="text-lg font-medium text-gray-900 mb-4">Projekti</h2>
+
+  @if (projects().length === 0) {
+    <div class="bg-white border border-gray-200 rounded-xl p-8 text-center">
+      <p class="text-sm text-gray-400">Nema objavljenih projekata</p>
+    </div>
+  }
+
+  <div class="flex flex-col gap-4">
+    @for (project of projects(); track project.id) {
+      <div class="bg-white border border-gray-200 rounded-xl p-5">
+        <!-- Autor i datum -->
+        <div class="flex items-center gap-2.5 mb-3">
+          <div
+            class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-medium text-blue-700 shrink-0"
+          >
+            {{ project.createdBy.displayName.slice(0, 2).toUpperCase() }}
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-900">{{ project.createdBy.displayName }}</p>
+            <p class="text-xs text-gray-400">{{ project.createdAt | date: 'd. M. yyyy' }}</p>
+          </div>
+        </div>
+
+        <!-- Naslov i opis -->
+        <h3 class="text-base font-medium text-gray-900 mb-1">{{ project.title }}</h3>
+        <p class="text-sm text-gray-500 mb-3">{{ project.description }}</p>
+
+        <!-- Tehnologije -->
+        @if (project.technologies.length > 0) {
+          <div class="flex flex-wrap gap-1.5 mb-4">
+            @for (tech of project.technologies; track tech) {
+              <span class="px-2.5 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">{{
+                tech
+              }}</span>
+            }
+          </div>
+        }
+
+        <!-- Gumb -->
+        @if (project.createdById !== auth.currentUser()?.id) {
+          @if (appliedProjectIds().includes(project.id)) {
+            <p class="text-xs text-gray-400 text-center py-2">Već si se prijavio</p>
+          } @else {
+            <button
+              (click)="openApply(project)"
+              class="w-full py-2 text-sm font-medium text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors"
+            >
+              Prijavi se na projekt
+            </button>
+          }
+        } @else {
+          <p class="text-xs text-gray-400 text-center">Tvoj projekt</p>
+        }
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Modal za prijavu -->
+@if (selectedProject()) {
+  <div class="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+    <div class="bg-white border border-gray-200 rounded-xl p-6 w-full max-w-md">
+      <h2 class="text-base font-medium text-gray-900 mb-1">Prijava na projekt</h2>
+      <p class="text-sm text-gray-400 mb-4">{{ selectedProject().title }}</p>
+
+      <div class="flex flex-col gap-4">
+        <div>
+          <label class="text-sm text-gray-500 mb-1 block">Poruka kreatoru</label>
+          <textarea
+            [(ngModel)]="message"
+            rows="4"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 transition-colors resize-none"
+            placeholder="Predstavi se i objasni zašto si zainteresiran..."
+          ></textarea>
+        </div>
+
+        @if (error) {
+          <p class="text-sm text-red-500">{{ error }}</p>
+        }
+
+        @if (success) {
+          <p class="text-sm text-green-600">{{ success }}</p>
+        }
+
+        <div class="flex gap-2 justify-end">
+          <button
+            (click)="selectedProject.set(null)"
+            class="px-4 py-2 text-sm text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            Zatvori
+          </button>
+          @if (!success) {
+            <button
+              (click)="apply()"
+              class="px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+            >
+              Pošalji prijavu
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}

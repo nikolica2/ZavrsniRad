@@ -1,0 +1,89 @@
+<div class="bg-white border border-gray-200 rounded-xl overflow-hidden mb-6">
+  <div class="grid grid-cols-[60px_1fr_1fr_100px] px-5 py-2.5 border-b border-gray-100">
+    <span class="text-xs text-gray-400 font-medium">#</span>
+    <span class="text-xs text-gray-400 font-medium">Ime</span>
+    <span class="text-xs text-gray-400 font-medium">Email</span>
+    <span class="text-xs text-gray-400 font-medium text-right">Akcije</span>
+  </div>
+
+  @for (member of members(); track member.id) {
+    <div
+      class="grid grid-cols-[60px_1fr_1fr_100px] px-5 py-3 items-center border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors"
+    >
+      <span class="text-sm text-gray-400">{{ member.id }}</span>
+
+      <div class="flex items-center gap-2.5">
+        <div
+          class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-medium text-blue-700 shrink-0"
+        >
+          {{ getInitials(member.displayName) }}
+        </div>
+        <span class="text-sm text-gray-900">{{ member.displayName }}</span>
+      </div>
+
+      <span class="text-sm text-gray-500">{{ member.email }}</span>
+
+      <div class="flex gap-2 justify-end">
+        <button
+          (click)="editMember(member)"
+          class="text-xs text-blue-600 hover:text-blue-800 transition-colors"
+        >
+          Uredi
+        </button>
+        <button
+          (click)="removeMember(member.id)"
+          class="text-xs text-red-500 hover:text-red-700 transition-colors"
+        >
+          Ukloni
+        </button>
+      </div>
+    </div>
+  }
+</div>
+
+<!-- Modal -->
+@if (selectedMember()) {
+  <div class="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
+    <div class="bg-white border border-gray-200 rounded-xl p-6 w-full max-w-sm">
+      <h2 class="text-base font-medium text-gray-900 mb-4">Uredi korisnika</h2>
+
+      <div class="flex flex-col gap-4">
+        <div>
+          <label class="text-sm text-gray-500 mb-1 block">Ime</label>
+          <input
+            type="text"
+            [(ngModel)]="editDisplayName"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+          />
+        </div>
+        <div>
+          <label class="text-sm text-gray-500 mb-1 block">Email</label>
+          <input
+            type="email"
+            [(ngModel)]="editEmail"
+            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+          />
+        </div>
+
+        @if (editError) {
+          <p class="text-sm text-red-500">{{ editError }}</p>
+        }
+
+        <div class="flex gap-2 justify-end">
+          <button
+            (click)="selectedMember.set(null)"
+            class="px-4 py-2 text-sm text-gray-500 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            Odustani
+          </button>
+          <button
+            (click)="saveEdit()"
+            class="px-4 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+          >
+            Spremi
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

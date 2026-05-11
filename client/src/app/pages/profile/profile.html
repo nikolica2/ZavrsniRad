@@ -1,1 +1,112 @@
-<p>profile works!</p>
+<div class="max-w-md mx-auto">
+  <div class="bg-white border border-gray-200 rounded-xl p-6 mb-4">
+    @if (loading()) {
+      <p class="text-sm text-gray-400 text-center py-4">Učitavanje...</p>
+    } @else {
+      <!-- Avatar i ime -->
+      <div class="flex items-center gap-4 mb-6">
+        <div
+          class="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-lg font-medium text-blue-700"
+        >
+          {{ displayName.slice(0, 2).toUpperCase() }}
+        </div>
+        <div>
+          <p class="text-base font-medium text-gray-900">{{ displayName }}</p>
+          <p class="text-sm text-gray-400">{{ email }}</p>
+        </div>
+      </div>
+
+      @if (!editing()) {
+        <div class="flex flex-col gap-3 mb-6">
+          <div>
+            <p class="text-xs text-gray-400 mb-0.5">Ime</p>
+            <p class="text-sm text-gray-900">{{ displayName }}</p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-400 mb-0.5">Email</p>
+            <p class="text-sm text-gray-900">{{ email }}</p>
+          </div>
+        </div>
+
+        <button
+          (click)="editing.set(true)"
+          class="w-full py-2 text-sm font-medium text-blue-600 border border-blue-200 rounded-lg hover:bg-blue-50 transition-colors"
+        >
+          Uredi podatke
+        </button>
+      } @else {
+        <div class="flex flex-col gap-4 mb-4">
+          <div>
+            <label class="text-sm text-gray-500 mb-1 block">Ime</label>
+            <input
+              type="text"
+              [(ngModel)]="displayName"
+              class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+            />
+          </div>
+          <div>
+            <label class="text-sm text-gray-500 mb-1 block">Email</label>
+            <input
+              type="email"
+              [(ngModel)]="email"
+              class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+            />
+          </div>
+        </div>
+
+        @if (error) {
+          <p class="text-sm text-red-500 mb-3">{{ error }}</p>
+        }
+
+        <div class="flex gap-2">
+          <button
+            (click)="editing.set(false)"
+            class="flex-1 py-2 text-sm text-gray-500 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            Odustani
+          </button>
+          <button
+            (click)="saveProfile()"
+            class="flex-1 py-2 text-sm text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+          >
+            Spremi
+          </button>
+        </div>
+      }
+
+      @if (success) {
+        <p class="text-sm text-green-600 mt-3">{{ success }}</p>
+      }
+    }
+  </div>
+
+  <!-- Gumb za razgovore -->
+  <button
+    (click)="loadChats()"
+    class="w-full bg-white border border-gray-200 rounded-xl p-4 text-sm font-medium text-gray-700 hover:border-blue-200 hover:text-blue-600 transition-colors text-left flex items-center justify-between mb-4"
+  >
+    Prikaži moje razgovore
+    <span class="text-gray-400">→</span>
+  </button>
+
+  <!-- Lista chatova -->
+  @if (showChats()) {
+    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+      @if (chats().length === 0) {
+        <p class="text-sm text-gray-400 text-center p-6">Nemaš aktivnih razgovora</p>
+      }
+      @for (chat of chats(); track chat.id) {
+        <div
+          (click)="router.navigate(['/chat', chat.id])"
+          class="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors cursor-pointer"
+        >
+          <div>
+            <p class="text-sm font-medium text-gray-900">{{ chat.title }}</p>
+            <p class="text-xs text-gray-400">Grupni chat</p>
+          </div>
+          <span class="text-gray-400 text-sm">→</span>
+        </div>
+      }
+    </div>
+  }
+</div>

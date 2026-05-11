@@ -24,5 +24,30 @@ namespace API.Controllers
             if (member == null) return NotFound();
             return member;
         }
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> RemoveMember(string id)
+        {
+            var member = await context.Users.FindAsync(id);
+            if (member == null) return NotFound();
+
+            context.Users.Remove(member);
+            await context.SaveChangesAsync();
+
+            return Ok();
+        }
+        [HttpPut("{id}")]
+        public async Task<ActionResult<AppUser>> UpdateMember(string id, UpdateMemberDto dto)
+        {
+            var member = await context.Users.FindAsync(id);
+            if (member == null) return NotFound();
+
+            member.DisplayName = dto.DisplayName;
+            member.Email = dto.Email;
+
+            await context.SaveChangesAsync();
+            return member;
+        }
+
+        public record UpdateMemberDto(string DisplayName, string Email);
     }
 }

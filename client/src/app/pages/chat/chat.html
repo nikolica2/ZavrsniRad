@@ -1,0 +1,65 @@
+<div class="max-w-2xl mx-auto flex flex-col h-[calc(100vh-100px)]">
+  <!-- Header -->
+  <div class="bg-white border border-gray-200 rounded-xl p-4 mb-4">
+    @if (project()) {
+      <h2 class="text-base font-medium text-gray-900">{{ project().title }}</h2>
+      <p class="text-xs text-gray-400">Grupni chat</p>
+    }
+  </div>
+
+  <!-- Poruke -->
+  <div
+    class="flex-1 bg-white border border-gray-200 rounded-xl p-4 overflow-y-auto flex flex-col gap-3 mb-4"
+  >
+    @if (messages().length === 0) {
+      <p class="text-sm text-gray-400 text-center my-auto">Još nema poruka</p>
+    }
+
+    @for (msg of messages(); track msg.id) {
+      @if (msg.userId === auth.currentUser()?.id) {
+        <!-- Moja poruka -->
+        <div class="flex justify-end">
+          <div class="max-w-[70%]">
+            <div class="bg-blue-600 text-white text-sm px-4 py-2.5 rounded-2xl rounded-br-sm">
+              {{ msg.message }}
+            </div>
+            <p class="text-xs text-gray-400 text-right mt-1">{{ msg.createdAt | date: 'HH:mm' }}</p>
+          </div>
+        </div>
+      } @else {
+        <!-- Tuđa poruka -->
+        <div class="flex gap-2.5">
+          <div
+            class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-xs font-medium text-blue-700 shrink-0 mt-1"
+          >
+            {{ msg.user.displayName.slice(0, 2).toUpperCase() }}
+          </div>
+          <div class="max-w-[70%]">
+            <p class="text-xs text-gray-400 mb-1">{{ msg.user.displayName }}</p>
+            <div class="bg-gray-100 text-gray-900 text-sm px-4 py-2.5 rounded-2xl rounded-bl-sm">
+              {{ msg.message }}
+            </div>
+            <p class="text-xs text-gray-400 mt-1">{{ msg.createdAt | date: 'HH:mm' }}</p>
+          </div>
+        </div>
+      }
+    }
+  </div>
+
+  <!-- Input -->
+  <div class="bg-white border border-gray-200 rounded-xl p-3 flex gap-2">
+    <input
+      type="text"
+      [(ngModel)]="messageInput"
+      (keydown.enter)="sendMessage()"
+      class="flex-1 text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 transition-colors"
+      placeholder="Napiši poruku..."
+    />
+    <button
+      (click)="sendMessage()"
+      class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+    >
+      Pošalji
+    </button>
+  </div>
+</div>
