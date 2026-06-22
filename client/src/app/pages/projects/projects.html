@@ -1,21 +1,74 @@
 <div class="max-w-2xl mx-auto">
-  <h2 class="text-lg font-medium text-gray-900 mb-4">Projekti</h2>
+  <!-- Search i filter -->
+  <div class="flex gap-2 mb-4">
+    <input
+      type="text"
+      [(ngModel)]="searchQuery"
+      class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+      placeholder="Pretraži projekte..."
+    />
+    <button
+      (click)="showFilter.update((v) => !v)"
+      class="px-4 py-2 text-sm border rounded-lg transition-colors"
+      [class.border-blue-500]="selectedTechs().length > 0"
+      [class.text-blue-600]="selectedTechs().length > 0"
+      [class.border-gray-200]="selectedTechs().length === 0"
+      [class.text-gray-500]="selectedTechs().length === 0"
+    >
+      Filter {{ selectedTechs().length > 0 ? '(' + selectedTechs().length + ')' : '' }}
+    </button>
+    @if (selectedTechs().length > 0 || searchQuery) {
+      <button
+        (click)="clearFilters()"
+        class="px-3 py-2 text-sm text-red-500 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+      >
+        Očisti
+      </button>
+    }
+  </div>
 
-  @if (projects().length === 0) {
+  <!-- Filter panel -->
+  @if (showFilter()) {
+    <div class="bg-white border border-gray-200 rounded-xl p-4 mb-4">
+      <p class="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">Tehnologije</p>
+      <div class="flex flex-wrap gap-2">
+        @for (tech of technologies; track tech) {
+          <button
+            (click)="toggleTech(tech)"
+            class="px-3 py-1.5 text-xs rounded-full border transition-colors"
+            [class.bg-blue-600]="selectedTechs().includes(tech)"
+            [class.text-white]="selectedTechs().includes(tech)"
+            [class.border-blue-600]="selectedTechs().includes(tech)"
+            [class.bg-white]="!selectedTechs().includes(tech)"
+            [class.text-gray-600]="!selectedTechs().includes(tech)"
+            [class.border-gray-200]="!selectedTechs().includes(tech)"
+          >
+            {{ tech }}
+          </button>
+        }
+      </div>
+    </div>
+  }
+
+  @if (filteredProjects().length === 0) {
     <div class="bg-white border border-gray-200 rounded-xl p-8 text-center">
-      <p class="text-sm text-gray-400">Nema objavljenih projekata</p>
+      <p class="text-sm text-gray-400">Nema projekata</p>
     </div>
   }
 
   <div class="flex flex-col gap-4">
-    @for (project of projects(); track project.id) {
+    @for (project of filteredProjects(); track project.id) {
       <div class="bg-white border border-gray-200 rounded-xl p-5">
         <!-- Autor i datum -->
         <div class="flex items-center gap-2.5 mb-3">
           <div
-            class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-medium text-blue-700 shrink-0"
+            class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-xs font-medium text-blue-700 shrink-0 overflow-hidden"
           >
-            {{ project.createdBy.displayName.slice(0, 2).toUpperCase() }}
+            @if (project.createdBy.profileImage) {
+              <img [src]="project.createdBy.profileImage" class="w-full h-full object-cover" />
+            } @else {
+              {{ project.createdBy.displayName.slice(0, 2).toUpperCase() }}
+            }
           </div>
           <div>
             <p class="text-sm font-medium text-gray-900">{{ project.createdBy.displayName }}</p>
@@ -31,9 +84,15 @@
         @if (project.technologies.length > 0) {
           <div class="flex flex-wrap gap-1.5 mb-4">
             @for (tech of project.technologies; track tech) {
-              <span class="px-2.5 py-1 bg-blue-50 text-blue-700 text-xs rounded-full">{{
-                tech
-              }}</span>
+              <span
+                class="px-2.5 py-1 text-xs rounded-full transition-colors"
+                [class.bg-blue-600]="selectedTechs().includes(tech)"
+                [class.text-white]="selectedTechs().includes(tech)"
+                [class.bg-blue-50]="!selectedTechs().includes(tech)"
+                [class.text-blue-700]="!selectedTechs().includes(tech)"
+              >
+                {{ tech }}
+              </span>
             }
           </div>
         }

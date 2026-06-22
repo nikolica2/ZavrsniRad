@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal, ChangeDetectorRef } from '@angular/core';
 import { lastValueFrom } from 'rxjs';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { AuthService } from './services/auth.service';
@@ -18,6 +18,8 @@ export class App implements OnInit, OnDestroy {
   protected notifications = signal<any[]>([]);
   protected showNotifications = signal(false);
   private pollInterval: any;
+  protected currentUserImage = signal<string | null>(null);
+  private cdr = inject(ChangeDetectorRef);
 
   get unreadCount() {
     return this.notifications().filter((n) => !n.isRead).length;
@@ -26,6 +28,9 @@ export class App implements OnInit, OnDestroy {
   async ngOnInit() {
     if (this.auth.currentUser()) {
       await this.loadNotifications();
+      await this.loadCurrentUserImage();
+      console.log('currentUserImage signal:', this.currentUserImage());
+
       this.pollInterval = setInterval(() => this.loadNotifications(), 10000);
     }
   }
@@ -58,6 +63,17 @@ export class App implements OnInit, OnDestroy {
     this.showNotifications.update((v) => !v);
     if (this.showNotifications() && this.unreadCount > 0) {
       this.markAllRead();
+    }
+  }
+  async loadCurrentUserImage() {
+    try {
+      const user = await lastValueFrom(
+        this.http.get<any>(`https://localhost:5001/api/members/${this.auth.currentUser()?.id}`),
+      );
+      this.currentUserImage.set(user.profileImage);
+      this.cdr.detectChanges();
+    } catch (error) {
+      console.log(error);
     }
   }
 }

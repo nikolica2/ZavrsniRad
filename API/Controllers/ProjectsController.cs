@@ -63,7 +63,9 @@ namespace API.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null) return Unauthorized();
 
-            var project = await context.Projects.FindAsync(id);
+            var project = await context.Projects
+                .Include(p => p.CreatedBy)
+                .FirstOrDefaultAsync(p => p.Id == id);
             if (project == null) return NotFound();
 
             if (project.CreatedById == userId)
@@ -74,6 +76,8 @@ namespace API.Controllers
             if (alreadyApplied)
                 return BadRequest("Već si se prijavio na ovaj projekt");
 
+            var applicant = await context.Users.FindAsync(userId);
+
             var application = new ProjectApplication
             {
                 ProjectId = id,
@@ -82,6 +86,15 @@ namespace API.Controllers
             };
 
             context.ProjectApplications.Add(application);
+
+            // obavijest kreatoru projekta
+            context.Notifications.Add(new Notification
+            {
+                UserId = project.CreatedById,
+                Message = $"{applicant!.DisplayName} se prijavio na tvoj projekt \"{project.Title}\"",
+                Type = "application"
+            });
+
             await context.SaveChangesAsync();
 
             return Ok();

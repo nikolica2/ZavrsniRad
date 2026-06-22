@@ -43,11 +43,13 @@ namespace API.Controllers
 
             member.DisplayName = dto.DisplayName;
             member.Email = dto.Email;
+            if (dto.ProfileImage != null)
+                member.ProfileImage = dto.ProfileImage;
 
             await context.SaveChangesAsync();
             return member;
         }
 
-        public record UpdateMemberDto(string DisplayName, string Email);
+        public record UpdateMemberDto(string DisplayName, string Email, string? ProfileImage);
     }
 }

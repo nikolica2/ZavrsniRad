@@ -1,0 +1,29 @@
+<div class="max-w-md mx-auto">
+  <h2 class="text-lg font-medium text-gray-900 mb-4">Moji razgovori</h2>
+
+  @if (chats().length === 0) {
+    <div class="bg-white border border-gray-200 rounded-xl p-8 text-center">
+      <p class="text-sm text-gray-400">Nemaš aktivnih razgovora</p>
+    </div>
+  }
+
+  <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+    @for (chat of chats(); track chat.id) {
+      <div
+        (click)="router.navigate(['/chat', chat.id])"
+        class="flex items-center gap-3 px-5 py-4 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors cursor-pointer"
+      >
+        <div
+          class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-sm font-medium text-blue-700 shrink-0"
+        >
+          {{ chat.title.slice(0, 2).toUpperCase() }}
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-gray-900">{{ chat.title }}</p>
+          <p class="text-xs text-gray-400 truncate">{{ chat.description }}</p>
+        </div>
+        <span class="text-gray-400 text-sm shrink-0">→</span>
+      </div>
+    }
+  </div>
+</div>

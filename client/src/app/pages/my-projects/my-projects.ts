@@ -25,19 +25,41 @@ export class MyProjects implements OnInit {
 
   protected title = '';
   protected description = '';
-  protected technologies: string[] = [];
-  protected techInput = '';
   protected error = '';
+
+  protected technologies = [
+    'Angular',
+    'React',
+    'Vue',
+    'Next.js',
+    'TypeScript',
+    '.NET',
+    'Node.js',
+    'Django',
+    'Spring Boot',
+    'Laravel',
+    'Flutter',
+    'React Native',
+    'PostgreSQL',
+    'MySQL',
+    'MongoDB',
+    'SQLite',
+    'Docker',
+    'AWS',
+    'Python',
+    'Git',
+  ];
+
+  protected technologies_selected: string[] = [];
 
   async ngOnInit() {
     try {
       const result = await lastValueFrom(
         this.http.get<any[]>('https://localhost:5001/api/projects/my-chats'),
       );
-      console.log('my-chats', result);
       this.projects.set(result);
     } catch (error) {
-      console.log('greška', error);
+      console.log(error);
     }
   }
 
@@ -64,8 +86,15 @@ export class MyProjects implements OnInit {
       }
     }
   }
+
   isOwner(project: any): boolean {
     return project.createdById === this.auth.currentUser()?.id;
+  }
+
+  toggleTech(tech: string) {
+    this.technologies_selected = this.technologies_selected.includes(tech)
+      ? this.technologies_selected.filter((t) => t !== tech)
+      : [...this.technologies_selected, tech];
   }
 
   async approveApplication(projectId: number, applicationId: number) {
@@ -82,18 +111,6 @@ export class MyProjects implements OnInit {
     }
   }
 
-  addTech() {
-    const t = this.techInput.trim();
-    if (t && !this.technologies.includes(t)) {
-      this.technologies = [...this.technologies, t];
-    }
-    this.techInput = '';
-  }
-
-  removeTech(tech: string) {
-    this.technologies = this.technologies.filter((t) => t !== tech);
-  }
-
   async createProject() {
     if (!this.title.trim() || !this.description.trim()) {
       this.error = 'Naslov i opis su obavezni';
@@ -104,14 +121,14 @@ export class MyProjects implements OnInit {
         this.http.post<any>('https://localhost:5001/api/projects', {
           title: this.title,
           description: this.description,
-          technologies: this.technologies,
+          technologies: this.technologies_selected,
         }),
       );
       this.projects.update((list) => [project, ...list]);
       this.showModal.set(false);
       this.title = '';
       this.description = '';
-      this.technologies = [];
+      this.technologies_selected = [];
       this.error = '';
     } catch (error) {
       this.error = 'Greška pri kreiranju projekta';

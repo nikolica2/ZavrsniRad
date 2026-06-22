@@ -1,49 +1,46 @@
 @if (auth.currentUser()) {
-  <div class="bg-white border border-gray-200 rounded-xl overflow-visible mb-6">
-    <div
-      class="px-6 py-4 border-b border-gray-100 flex items-center justify-between flex-wrap gap-3"
-    >
-      <h1 class="text-xl font-medium text-blue-600">{{ title }}</h1>
+  <div class="bg-white border border-gray-200 rounded-xl mb-6 sticky top-0 z-40">
+    <div class="px-6 py-3 flex items-center justify-between">
+      <!-- Lijevo: brand -->
+      <h1 class="text-base font-semibold text-blue-600">{{ title }}</h1>
 
+      <!-- Sredina: navigacija -->
       <nav class="flex gap-1 items-center">
         <a
           routerLink="/projects"
-          class="px-3.5 py-1.5 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+          class="px-3 py-1.5 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+          >Projekti</a
         >
-          Projekti
-        </a>
-
         <a
           routerLink="/my-projects"
-          class="px-3.5 py-1.5 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+          class="px-3 py-1.5 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+          >Moji projekti</a
         >
-          Moji projekti
-        </a>
-
-        <a
-          routerLink="/profile"
-          class="px-3.5 py-1.5 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
-        >
-          Profil
-        </a>
-
         @if (auth.isAdmin()) {
           <a
             routerLink="/members"
-            class="px-3.5 py-1.5 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+            class="px-3 py-1.5 rounded-lg text-sm text-gray-500 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+            >Članovi</a
           >
-            Članovi
-          </a>
         }
+      </nav>
+
+      <!-- Desno: chat, notifikacije, profil, odjava -->
+      <div class="flex items-center gap-1">
+        <a
+          routerLink="/my-chats"
+          class="px-2.5 py-1.5 rounded-lg text-gray-400 hover:bg-gray-100 transition-colors"
+          title="Razgovori"
+          >💬</a
+        >
 
         <!-- Zvonce -->
         <div class="relative">
           <button
             (click)="toggleNotifications()"
-            class="relative px-3.5 py-1.5 rounded-lg text-sm text-gray-500 hover:bg-gray-100 transition-colors"
+            class="relative px-2.5 py-1.5 rounded-lg text-gray-400 hover:bg-gray-100 transition-colors"
           >
             🔔
-
             @if (unreadCount > 0) {
               <span
                 class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"
@@ -55,26 +52,21 @@
 
           @if (showNotifications()) {
             <div
-              class="fixed top-20 right-6 w-80 bg-white border border-gray-200 rounded-xl shadow-2xl z-[9999] overflow-hidden"
+              class="absolute right-0 mt-2 w-80 bg-white border border-gray-200 rounded-xl shadow-lg z-[100] overflow-hidden"
             >
-              <div class="px-4 py-3 border-b border-gray-100 bg-gray-50">
+              <div class="px-4 py-3 border-b border-gray-100">
                 <p class="text-sm font-medium text-gray-900">Obavijesti</p>
               </div>
-
               @if (notifications().length === 0) {
                 <p class="text-sm text-gray-400 text-center py-6">Nema obavijesti</p>
               }
-
               <div class="max-h-80 overflow-y-auto">
                 @for (n of notifications(); track n.id) {
                   <div
-                    class="px-4 py-3 border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors"
+                    class="px-4 py-3 border-b border-gray-50 last:border-0"
                     [class.bg-blue-50]="!n.isRead"
                   >
-                    <p class="text-sm text-gray-900">
-                      {{ n.message }}
-                    </p>
-
+                    <p class="text-sm text-gray-900">{{ n.message }}</p>
                     <p class="text-xs text-gray-400 mt-0.5">
                       {{ n.createdAt | date: 'd. M. yyyy HH:mm' }}
                     </p>
@@ -84,18 +76,31 @@
             </div>
           }
         </div>
-
-        <span class="text-sm text-gray-400 px-2">
-          {{ auth.currentUser()?.displayName }}
-        </span>
+        <a
+          routerLink="/profile"
+          class="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+        >
+          <div
+            class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-xs font-medium text-blue-700 overflow-hidden"
+          >
+            @if (currentUserImage()) {
+              <img [src]="currentUserImage()" class="w-full h-full object-cover" />
+            } @else {
+              {{ auth.currentUser()?.displayName?.slice(0, 2)?.toUpperCase() }}
+            }
+          </div>
+          <span class="text-sm text-gray-600 font-medium">{{
+            auth.currentUser()?.displayName
+          }}</span>
+        </a>
 
         <button
           (click)="auth.logout()"
-          class="px-3.5 py-1.5 rounded-lg text-sm text-red-500 hover:bg-red-50 transition-colors"
+          class="px-3 py-1.5 rounded-lg text-sm text-red-500 hover:bg-red-50 transition-colors"
         >
           Odjava
         </button>
-      </nav>
+      </div>
     </div>
   </div>
 }

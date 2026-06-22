@@ -11,6 +11,7 @@ import { Members } from './pages/members/members';
 import { authGuard } from './guards/auth.guard';
 import { adminGuard } from './guards/admin.guard';
 import { Chat } from './pages/chat/chat';
+import { MyChats } from './pages/my-chats/my-chats';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -22,4 +23,5 @@ export const routes: Routes = [
   { path: 'project/:id', component: ProjectDetail, canActivate: [authGuard] },
   { path: 'members', component: Members, canActivate: [authGuard, adminGuard] },
   { path: 'chat/:id', component: Chat, canActivate: [authGuard] },
+  { path: 'my-chats', component: MyChats, canActivate: [authGuard] },
 ];

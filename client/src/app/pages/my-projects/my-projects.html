@@ -91,9 +91,13 @@
               <div class="flex items-center justify-between mb-2">
                 <div class="flex items-center gap-2">
                   <div
-                    class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-xs font-medium text-blue-700 shrink-0"
+                    class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-xs font-medium text-blue-700 shrink-0 overflow-hidden"
                   >
-                    {{ app.user.displayName.slice(0, 2).toUpperCase() }}
+                    @if (app.user.profileImage) {
+                      <img [src]="app.user.profileImage" class="w-full h-full object-cover" />
+                    } @else {
+                      {{ app.user.displayName.slice(0, 2).toUpperCase() }}
+                    }
                   </div>
                   <div>
                     <p class="text-sm font-medium text-gray-900">{{ app.user.displayName }}</p>
@@ -138,7 +142,9 @@
 <!-- Modal za novi projekt -->
 @if (showModal()) {
   <div class="fixed inset-0 bg-black/30 flex items-center justify-center z-50">
-    <div class="bg-white border border-gray-200 rounded-xl p-6 w-full max-w-md">
+    <div
+      class="bg-white border border-gray-200 rounded-xl p-6 w-full max-w-md max-h-[80vh] overflow-y-auto"
+    >
       <h2 class="text-base font-medium text-gray-900 mb-4">Novi projekt</h2>
 
       <div class="flex flex-col gap-4">
@@ -164,31 +170,21 @@
 
         <div>
           <label class="text-sm text-gray-500 mb-1 block">Tehnologije</label>
-          <div class="flex gap-2 mb-2">
-            <input
-              type="text"
-              [(ngModel)]="techInput"
-              (keydown.enter)="addTech()"
-              class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-              placeholder="npr. Angular, .NET..."
-            />
-            <button
-              (click)="addTech()"
-              class="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-sm rounded-lg transition-colors"
-            >
-              Dodaj
-            </button>
-          </div>
-          <div class="flex flex-wrap gap-1.5">
+          <div class="flex flex-wrap gap-2">
             @for (tech of technologies; track tech) {
-              <span
-                class="flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 text-xs rounded-full"
+              <button
+                type="button"
+                (click)="toggleTech(tech)"
+                class="px-3 py-1.5 text-xs rounded-full border transition-colors"
+                [class.bg-blue-600]="technologies_selected.includes(tech)"
+                [class.text-white]="technologies_selected.includes(tech)"
+                [class.border-blue-600]="technologies_selected.includes(tech)"
+                [class.bg-white]="!technologies_selected.includes(tech)"
+                [class.text-gray-600]="!technologies_selected.includes(tech)"
+                [class.border-gray-200]="!technologies_selected.includes(tech)"
               >
                 {{ tech }}
-                <button (click)="removeTech(tech)" class="text-blue-400 hover:text-blue-700">
-                  ✕
-                </button>
-              </span>
+              </button>
             }
           </div>
         </div>

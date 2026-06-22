@@ -5,10 +5,29 @@
     } @else {
       <!-- Avatar i ime -->
       <div class="flex items-center gap-4 mb-6">
-        <div
-          class="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-lg font-medium text-blue-700"
-        >
-          {{ displayName.slice(0, 2).toUpperCase() }}
+        <div class="relative">
+          @if (profileImage) {
+            <img [src]="profileImage" class="w-14 h-14 rounded-full object-cover" />
+          } @else {
+            <div
+              class="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-lg font-medium text-blue-700"
+            >
+              {{ displayName.slice(0, 2).toUpperCase() }}
+            </div>
+          }
+          @if (editing()) {
+            <label
+              class="absolute -bottom-1 -right-1 w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center cursor-pointer hover:bg-blue-700 transition-colors"
+            >
+              <span class="text-white text-xs">+</span>
+              <input
+                type="file"
+                accept="image/*"
+                class="hidden"
+                (change)="onImageSelected($event)"
+              />
+            </label>
+          }
         </div>
         <div>
           <p class="text-base font-medium text-gray-900">{{ displayName }}</p>
@@ -82,31 +101,10 @@
 
   <!-- Gumb za razgovore -->
   <button
-    (click)="loadChats()"
-    class="w-full bg-white border border-gray-200 rounded-xl p-4 text-sm font-medium text-gray-700 hover:border-blue-200 hover:text-blue-600 transition-colors text-left flex items-center justify-between mb-4"
+    (click)="router.navigate(['/my-chats'])"
+    class="w-full bg-white border border-gray-200 rounded-xl p-4 text-sm font-medium text-gray-700 hover:border-blue-200 hover:text-blue-600 transition-colors text-left flex items-center justify-between"
   >
     Prikaži moje razgovore
     <span class="text-gray-400">→</span>
   </button>
-
-  <!-- Lista chatova -->
-  @if (showChats()) {
-    <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
-      @if (chats().length === 0) {
-        <p class="text-sm text-gray-400 text-center p-6">Nemaš aktivnih razgovora</p>
-      }
-      @for (chat of chats(); track chat.id) {
-        <div
-          (click)="router.navigate(['/chat', chat.id])"
-          class="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors cursor-pointer"
-        >
-          <div>
-            <p class="text-sm font-medium text-gray-900">{{ chat.title }}</p>
-            <p class="text-xs text-gray-400">Grupni chat</p>
-          </div>
-          <span class="text-gray-400 text-sm">→</span>
-        </div>
-      }
-    </div>
-  }
 </div>
