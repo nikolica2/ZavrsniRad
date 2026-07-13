@@ -20,7 +20,6 @@ export const routes: Routes = [
   { path: 'projects', component: Projects, canActivate: [authGuard] },
   { path: 'my-projects', component: MyProjects, canActivate: [authGuard] },
   { path: 'profile', component: Profile, canActivate: [authGuard] },
-  { path: 'project/:id', component: ProjectDetail, canActivate: [authGuard] },
   { path: 'members', component: Members, canActivate: [authGuard, adminGuard] },
   { path: 'chat/:id', component: Chat, canActivate: [authGuard] },
   { path: 'my-chats', component: MyChats, canActivate: [authGuard] },
